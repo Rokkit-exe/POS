@@ -1,6 +1,12 @@
-# Getting Started with Create React App
+# Getting Started My POS project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+For this project i assume you have `Node.js` and `Git` already installed on your PC.
+
+### 1. Clone this repository on your PC using terminal in your desired folder
+        
+        ### `git clone https://github.com/Rokkit-exe/POS.git`
+        
+### 2. Install dependencies (navigate to the directory you just cloned)
 
 ## Available Scripts
 
