@@ -4,7 +4,7 @@ For this project i assume you have `Node.js` and `Git` already installed on your
 
 ### 1. Clone this repository on your PC using terminal in your desired folder
         
-#     `git clone https://github.com/Rokkit-exe/POS.git`
+        `git clone https://github.com/Rokkit-exe/POS.git`
         
 ### 2. Install dependencies (navigate to the directory you just cloned)
 
