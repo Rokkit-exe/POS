@@ -1,4 +1,4 @@
-# Getting Started With My POS project
+# Getting Started With My POS Project
 
 For this project i assume you have `Node.js` and `Git` already installed on your PC.
 
@@ -24,7 +24,7 @@ If no internet page opened by it self, you can open [http://localhost:3000](http
 
 **Note: You might have to install `json-server` since it is not included in `package.json`.**
 
-        in the main directory, run: `npm i json-server`
+in the main directory, run: `npm i json-server`
 
 
 ### `npm start`
