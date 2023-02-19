@@ -4,13 +4,19 @@ For this project i assume you have `Node.js` and `Git` already installed on your
 
 ### 1. Clone this repository on your PC using terminal in your desired folder
         
-####        `git clone https://github.com/Rokkit-exe/POS.git`
+`git clone https://github.com/Rokkit-exe/POS.git`
         
 ### 2. Install dependencies (navigate to the directory you just cloned)
 
-## Available Scripts
+`npm install`
 
-In the project directory, you can run:
+### 3. Start frontend server
+
+`npm start`
+
+### 4. start backend server (navigate to the backend directory in a new terminal windows)
+
+`npx json-server --watch db.json --port 8000`
 
 ### `npm start`
 
