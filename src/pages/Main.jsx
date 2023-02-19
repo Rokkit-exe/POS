@@ -1,10 +1,10 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { /* Link, */ NavLink, useLocation /* , useOutletContext */ } from 'react-router-dom'
-import Client from '../objects/Client'
+import { NavLink, useLocation } from 'react-router-dom'
 
 
 function Main() {
+    const databaseURL = process.env.REACT_APP_DATABASE_URL
 
     const TPS = 0.05
     const TVQ = 0.09
@@ -18,28 +18,31 @@ function Main() {
     const [curClient, setCurClient] = useState(clients[0])
     const [categories, setCategories] = useState([])
     const [items, setitems] = useState([])
-    const [cart, setCart] = useState(curClient.cart)
-    const [cartSubTotal, setCartSubTotal] = useState(curClient.cart.reduce((total, x) => total + x.price, 0))
+    const [cartSubTotal, setCartSubTotal] = useState(0)
     const [tps, setTps] = useState(cartSubTotal * TPS)
     const [tvq, setTvq] = useState(cartSubTotal * TVQ)
     const [cartTotal, setCartTotal] = useState(cartSubTotal + tps + tvq)
     const [selectedItem, setSelectedItem] = useState([])
     const [selectedKey, setSelectedKey] = useState(-1)
-    const [orders, setOrders] = useState([])
+    const [orders, setOrders] = useState()
     
-    const addItemToCart = (item, key) => setCurClient({...curClient, cart: [...curClient.cart, {...item, cartId: curClient.cart.length + 1}]})
+    const addItemToCart = (item) => {
+        let curClientCart = curClient.cart ? [...curClient.cart, {...item, cartId: curClient.cart.length}] : [{...item, cartId: 0}]
+        setCurClient({...curClient, cart: curClientCart})
+    }
         
-    const removeItemFromCart = (item) => setCurClient(curClient.cart.filter(elem => item.cartId !== elem.cartId))
+        
+    const removeItemFromCart = (item) => {
+        console.log(item)
+        setCurClient(curClient.cart.filter(elem => item.cartId === elem.cartId))
+    }
     
-    const handleSelect = (item, key) => {
+    const handleSelect = (item) => {
         if (selectedItem === item) {
-            setSelectedKey(-1)
             setSelectedItem({})
-            console.log(item)
         }
         else {
             setSelectedItem(item)
-            setSelectedKey(key)
         }
     }
 
@@ -59,7 +62,7 @@ function Main() {
     }
 
     const updateTotal= () => {
-        setCartSubTotal(curClient.cart.reduce((total, x) => total + x.price, 0))
+        setCartSubTotal(curClient.cart ? curClient.cart.reduce((total, x) => total + x.price, 0) : 0)
         setTps(cartSubTotal * TPS)
         setTvq(cartSubTotal * TVQ)
         setCartTotal(cartSubTotal + tps + tvq)
@@ -69,7 +72,7 @@ function Main() {
 
 
     const fetchProducts = async(categorie) => {
-        const result = await axios.get("http://localhost:8000/"+categorie)
+        const result = await axios.get(databaseURL + categorie)
         setCategories(await result.data)
     }
 
@@ -78,10 +81,17 @@ function Main() {
     },[])
 
     useEffect(() => {
+        setCartSubTotal(curClient.cart ? curClient.cart.reduce((total, x) => total + x.price, 0) : 0)
+    },[curClient])
+
+    useEffect(() => {
         setTps(cartSubTotal * TPS)
         setTvq(cartSubTotal * TVQ)
+    }, [cartSubTotal])
+
+    useEffect(() => {
         setCartTotal(cartSubTotal + tps + tvq)
-    },[curClient])
+    }, [tvq])
 
     return (
         <div className='pos-page'>
@@ -116,13 +126,14 @@ function Main() {
                         <div className='flex cart-container'>
                             <ul className='light' onChange={() => updateTotal()}> 
                                 {curClient.cart ? curClient.cart.map((item, key) => 
-                                <li className='light d-flex flex-row justify-content-between' 
-                                    style={key === selectedKey ? {border: "1px solid lightgray"} : {border: "none"}}
-                                    onClick={() => handleSelect(item, key)}
+                                <li className='light d-flex flex-row justify-content-between'
+                                    key={key}
+                                    style={item.cartId === selectedItem.cartId ? {border: "1px solid lightgray"} : {border: "none"}}
+                                    onClick={() => handleSelect(item)}
                                     >
                                     <div>{item.name}</div>
                                     <div className='mx-2'>{item.price}$</div>
-                                </li>) : {}}
+                                </li>) : undefined}
                             </ul>
                         </div>
                         <div className='light border border-light total-container'>
@@ -139,11 +150,7 @@ function Main() {
                     <ul className="d-flex text-light panel-list flex-column">
                         {items ? items.map((item, key) => 
                             <li key={key} className="list-item" onClick={() => {
-                                addItemToCart(item, key)
-                                setCartSubTotal(curClient.cart.reduce((total, x) => total + x.price, 0))
-                                setTps(cartSubTotal * TPS)
-                                setTvq(cartSubTotal * TVQ)
-                                setCartTotal(cartSubTotal + tps + tvq)
+                                addItemToCart(item)
                             }}>{item.name}</li>
                         )
                         : <li className="list-item">Loading</li>}                        

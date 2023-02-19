@@ -20,7 +20,7 @@ If no internet page opened by it self, you can open [http://localhost:3000](http
 
 `npx json-server --watch db.json --port 8000`
 
-**Note: You can change the port number in the file `DATABASE_URL.env`.**
+**Note: You can change the port number in the file `.env`.**
 
 **Note: You might have to install `json-server` since it is not included in `package.json`.**
 

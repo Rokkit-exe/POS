@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, NavLink, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import Client from '../objects/Client'
 import TableObject from '../objects/TableObject'
 
 function Table() {
+    const databaseURL = process.env.REACT_APP_DATABASE_URL
 
     const location = useLocation()
     const user = location.state.user
@@ -24,7 +25,7 @@ function Table() {
     const remove = () => setTableNumber(tableNumber.slice(0, tableNumber.length - 1));
 
     const fetchTables = async() => {
-        const result = await axios.get("http://localhost:8000/tables")
+        const result = await axios.get(`${databaseURL}tables`)
         setTables(await result.data)
     }
 

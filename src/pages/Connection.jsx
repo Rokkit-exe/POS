@@ -1,16 +1,17 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
-import MainLayout from '../layouts/MainLayout'
+import { useNavigate } from 'react-router-dom'
 
 function Connection() {
+    const databaseURL = process.env.REACT_APP_DATABASE_URL
+
     const [code, setcode] = useState("")
     const [users, setUsers] = useState([])
 
     const navigate = useNavigate()
 
     const fetchUsers = async() => {
-        const result = await axios.get("http://localhost:8000/users")
+        const result = await axios(`${databaseURL}users`)
         setUsers(await result.data)
     }
 

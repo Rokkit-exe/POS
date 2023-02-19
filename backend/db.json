@@ -342,7 +342,15 @@
     "tables": [
         {
             "id": "",
-            "clients": [],
+            "clients": [
+                {
+                    "id": 1,
+                    "name": "",
+                    "cart": [],
+                    "articles": [],
+                    "active": 0
+                }
+            ],
             "active": 0
         }
     ]
