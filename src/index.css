@@ -53,10 +53,6 @@ code {
   height: 100%;
 }
 
-/* ul {
-  list-style-type: none;
-} */
-
 .title {
   color: orangered;
 }
@@ -64,8 +60,7 @@ code {
 .main-panel {
   flex: 1;
   width: 100%;
-  height: calc(100vh - 215px);
-  /* padding-bottom: 200px; */
+  height: calc(100vh - 256px);
 }
 
 .side-panel {
@@ -84,6 +79,7 @@ code {
   padding-bottom: 1rem;
   font-size: 20px;
   overflow-y: auto;
+  
 }
 
 .side-side-panel {
@@ -173,7 +169,7 @@ code {
 
 .cart-container {
   overflow-y: auto;
-  height: 460px;
+  height: 420px;
 }
 
 .connection-input {

@@ -14,7 +14,7 @@ function App() {
   return (
       <Router>
         <Routes>
-          <Route path='/' element={<HomePage/>}/>
+          <Route path='/' element={<Connection/>}/>
           <Route path='/con' element={<Connection/>} />
           <Route path='/main' element={<Main/>}/>
           <Route path='/table' element={<Table/>}/>
