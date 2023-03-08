@@ -1,21 +1,22 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import FooterButton from '../components/FooterButton'
 
 
 function Main() {
     const databaseURL = process.env.REACT_APP_DATABASE_URL
 
+    const navigate = useNavigate()
+    const location = useLocation()
+
     const TPS = 0.05
     const TVQ = 0.09
 
-    const location = useLocation()
     const user = location.state.user
-    const table = location.state.table
-    
-    
-    const [clients, setClients] = useState(table.clients)
-    const [curClient, setCurClient] = useState(clients[0])
+
+    const [table, setTable] = useState(location.state.table)
+    const [curClient, setCurClient] = useState(location.state.curClient ? location.state.curClient : table.clients[0])
     const [categories, setCategories] = useState([])
     const [items, setitems] = useState([])
     const [cartSubTotal, setCartSubTotal] = useState(0)
@@ -27,6 +28,9 @@ function Main() {
     const [note, setNote] = useState("")
 
     const [showNoteBox, setShowNoteBox] = useState(false)
+
+    console.log(table)
+    console.log(curClient)
     
     const addItemToCart = (item) => {
         let curClientCart = curClient.cart ? [...curClient.cart, {...item, cartId: curClient.cart.length}] : [{...item, cartId: 0}]
@@ -37,17 +41,7 @@ function Main() {
     
     const handleSelect = (item) => setSelectedItem(selectedItem === item ? {} : item)
 
-    const handlePunch = () => {
-        updateClients()
-    }
-
-    const updateClients = () => {
-        setClients(clients.forEach(client => {
-            client.articles = [...client.articles, ...client.cart]
-            client.active = client.cart ? 1 : client.active
-            client.cart = []
-        }))
-    }
+    const handlePunch = () => {}
 
     const updateTotal= () => {
         setCartSubTotal(curClient.cart ? curClient.cart.reduce((total, x) => total + x.price, 0) : 0)
@@ -59,7 +53,7 @@ function Main() {
     const removeItemFromOrder = (item) => orders.filter(elem => item !== elem)
 
     const changeClient = (newClient) => {
-        setClients(clients.map((client) => client.id === clients[curClient.id - 1].id ? curClient : client))
+        setTable({...table, clients: table.clients.map((client) => client.id === table.clients[curClient.id - 1].id ? curClient : client)})
         setCurClient(newClient)
     }
 
@@ -81,8 +75,18 @@ function Main() {
 
     useEffect(() => {
         setCartSubTotal(curClient.cart ? curClient.cart.reduce((total, x) => total + x.price, 0) : 0)
-        console.log(curClient)
-        console.log(curClient.id)
+        setTable(
+            {
+                ...table,
+                active: curClient.cart.length >= 1 || curClient.articles >= 1 ? true : false,
+                clients: table.clients.map((client) => client.id === table.clients[curClient.id - 1].id ? 
+                    {
+                        ...curClient, 
+                        active: curClient.cart.length >= 1 || curClient.articles >= 1 ? true : false
+                    } 
+                    : client)
+            }
+        )
     },[curClient])
 
     useEffect(() => {
@@ -101,9 +105,9 @@ function Main() {
                     <h2 className="mx-3 title"><NavLink to="/" className="navlink">Cluster</NavLink></h2>
                 </div>
                 <div className="d-flex justify-content-center">
-                    <i className="bi bi-caret-left icons px-3" onClick={() => changeClient(curClient.id > 1 ? clients[curClient.id - 2] : clients[curClient.id - 1])}></i>
-                    <i className="bi bi-people icons px-3"></i>
-                    <i className="bi bi-caret-right icons px-3" onClick={() => changeClient(clients[curClient.id])}></i>
+                    <i className="bi bi-caret-left icons px-3" onClick={() => changeClient(curClient.id > 1 ? table.clients[curClient.id - 2] : table.clients[curClient.id - 1])}></i>
+                    <i className="bi bi-people icons px-3" onClick={() => navigate("/pivot", {state: {user: user, table: table}})}></i>
+                    <i className="bi bi-caret-right icons px-3" onClick={() => changeClient(table.clients[curClient.id])}></i>
                 </div>
                 <div className="pe-5 me-3">
                     <p className="username">User: {user.name}</p>
@@ -186,60 +190,14 @@ function Main() {
 
             <div className="footer bg-dark bg-gradient">
                 <ul className="text-light footer-list d-flex flex-row">
-                    <li className="footer-item d-flex justify-content-center align-items-center flex-column">
-                        <div className="">
-                            <div className="footer-icon d-flex justify-content-center align-items-center"><i className="bi bi-box-arrow-left"></i></div>
-                            <div className="footer-item-text d-flex justify-content-center align-items-center">Déconnexion</div>
-                        </div>
-                    </li>
-                    <li className="footer-item d-flex justify-content-center align-items-center">
-                        <div onClick={() => removeItemFromCart(selectedItem)}>
-                            <div className="footer-icon d-flex justify-content-center align-items-center"><i className="bi bi-x-lg"></i></div>
-                            <div className="footer-item-text d-flex justify-content-center align-items-center">Supprimer</div>
-                        </div>
-                        
-                    </li>
-                    <li className="footer-item d-flex justify-content-center align-items-center">
-                        <div>
-                            <div className="footer-icon d-flex justify-content-center align-items-center"><i className="bi bi-card-checklist"></i></div>
-                            <div className="footer-item-text d-flex justify-content-center align-items-center">Ingredients</div>
-                        </div>
-                        
-                    </li>
-                    <li className="footer-item d-flex justify-content-center align-items-center">
-                        <div>
-                            <div className="footer-icon d-flex justify-content-center align-items-center"><i className="bi bi-list-ol"></i></div>
-                            <div className="footer-item-text d-flex justify-content-center align-items-center">Services</div>
-                        </div>
-                        
-                    </li>
-                    <li className="footer-item d-flex justify-content-center align-items-center">
-                        <div onClick={() => setShowNoteBox(!showNoteBox)}>
-                            <div className="footer-icon d-flex justify-content-center align-items-center"><i className="bi bi-chat-right-text"></i></div>
-                            <div className="footer-item-text d-flex justify-content-center align-items-center">Notes</div>
-                        </div>
-                        
-                    </li>
-                    <li className="footer-item d-flex justify-content-center align-items-center">
-                        <div>
-                            <div className="footer-icon d-flex justify-content-center align-items-center"><i className="bi bi-credit-card"></i></div>
-                            <div className="footer-item-text d-flex justify-content-center align-items-center">Paiement</div>
-                        </div>
-                        
-                    </li>
-                    <li className="footer-item d-flex justify-content-center align-items-center">
-                        <div>
-                            <div className="footer-icon d-flex justify-content-center align-items-center"><i className="bi bi-slash-circle"></i></div>
-                            <div className="footer-item-text d-flex justify-content-center align-items-center">Annuler</div>
-                        </div>
-                        
-                    </li>
-                    <li className="footer-item d-flex justify-content-center align-items-center">
-                        <div onClick={() => handlePunch()}>
-                            <div className="footer-icon d-flex justify-content-center align-items-center"><i className="bi bi-check-circle"></i></div>
-                            <div className="footer-item-text d-flex justify-content-center align-items-center">Continuer</div>
-                        </div>
-                    </li>
+                    <FooterButton title="Déconnexion" color="yellow" icon="bi-box-arrow-left" click={() => true}/>
+                    <FooterButton title="Supprimer" color="red" icon="bi-x-lg" click={() => removeItemFromCart(selectedItem)}/>
+                    <FooterButton title="Ingredients" color="orange" icon="bi-card-checklist" click={() => true}/>
+                    <FooterButton title="Services" color="pink" icon="bi-list-ol" click={() => true}/>
+                    <FooterButton title="Notes" color="lightblue" icon="bi-chat-right-text" click={() => setShowNoteBox(!showNoteBox)}/>
+                    <FooterButton title="Payment" color="blue" icon="bi-credit-card" click={() => true}/>
+                    <FooterButton title="Annuler" color="red" icon="bi-slash-circle" click={() => true}/>
+                    <FooterButton title="Continuer" color="green" icon="bi-check-circle" click={() => handlePunch()}/>
                 </ul>
             </div>
         </div>

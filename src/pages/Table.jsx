@@ -19,7 +19,7 @@ function Table() {
     const handleSelectTable = () => {
         setTable(tables.find((x) => x.id === parseInt(tableNumber)) ? 
         tables.find((x) => x.id === parseInt(tableNumber)) : 
-        {id: parseInt(tableNumber), clients: Array.from({length: 30}, (x, i) => ({...Client, id: i + 1})), active: 0})
+        {id: parseInt(tableNumber), clients: Array.from({length: 30}, (x, i) => ({...Client, id: i + 1})), active: false})
     }
 
     const remove = () => setTableNumber(tableNumber.slice(0, tableNumber.length - 1));
@@ -30,8 +30,10 @@ function Table() {
     }
 
     useEffect(() => {
-        if (table) 
+        if (table && !table.active) 
             navigate("/main", {state: {user: user, table: table}})
+        else if (table && table.active)
+            navigate("/pivot", {state: {user: user, table: table}})
     },[table])
 
     useEffect(() => {

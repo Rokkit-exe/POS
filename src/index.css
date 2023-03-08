@@ -79,7 +79,6 @@ code {
   padding-bottom: 1rem;
   font-size: 20px;
   overflow-y: auto;
-  
 }
 
 .side-side-panel {
@@ -194,7 +193,7 @@ code {
   padding-bottom: 0.1rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-  border: 1px solid lightgray;
+  border: 1px solid;
   border-radius: 20px;
   margin: 0.4rem;
 }

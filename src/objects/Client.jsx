@@ -3,7 +3,7 @@ const Client = {
     name: "",
     cart: [],
     articles: [],
-    active: 0
+    active: false
 }
 
 export default Client;

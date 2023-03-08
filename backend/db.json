@@ -387,10 +387,10 @@
                     "name": "",
                     "cart": [],
                     "articles": [],
-                    "active": 0
+                    "active": false
                 }
             ],
-            "active": 0
+            "active": false
         }
     ]
 }
