@@ -15,7 +15,7 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Connection/>}/>
-          <Route path='/con' element={<Connection/>} />
+          <Route path='/connection' element={<Connection/>} />
           <Route path='/main' element={<Main/>}/>
           <Route path='/table' element={<Table/>}/>
           <Route path='/pivot' element={<Pivot/>}/>

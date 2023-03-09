@@ -14,10 +14,7 @@ code {
 }
 
 .connection-container {
-  width: 100%;
   height: 100vh;
-  margin: 0;
-  padding: 0;
 }
 
 .pos-item {
@@ -37,11 +34,12 @@ code {
 }
 
 .light {
-  color: white;
+  color: white; 
 }
 
 .header {
   border-bottom: 3px solid black;
+  height: 126px;
 }
 
 .main-layout {

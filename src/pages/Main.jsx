@@ -1,7 +1,22 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import FooterButton from '../components/FooterButton'
+import { useLocation, useNavigate } from 'react-router-dom'
+import CartContainer from '../components/MainPanel/SidePanel/CartContainer'
+import CartItemsContainer from '../components/MainPanel/SidePanel/CartItemsContainer'
+import CartItemsList from '../components/MainPanel/SidePanel/CartItemsList'
+import ClientNavigationContainer from '../components/Header/ClientNavigationContainer'
+import FooterButton from '../components/Footer/FooterButton'
+import Header from '../components/Header/Header'
+import MainPanel from '../components/MainPanel/MainPanel'
+import MidPanel from '../components/MainPanel/MidPanel/MidPanel'
+import PriceContainer from '../components/MainPanel/SidePanel/PriceContainer'
+import SidePanel from '../components/MainPanel/SidePanel/SidePanel'
+import StatusContainer from '../components/Header/StatusContainer'
+import TopSidePanelContainer from '../components/MainPanel/SidePanel/TopSidePanelContainer'
+import NoteContainer from '../components/MainPanel/MidPanel/NoteContainer'
+import ItemsList from '../components/MainPanel/MidPanel/ItemsList'
+import FooterContainer from '../components/Footer/FooterContainer'
+import FooterButtonList from '../components/Footer/FooterButtonList'
 
 
 function Main() {
@@ -29,8 +44,8 @@ function Main() {
 
     const [showNoteBox, setShowNoteBox] = useState(false)
 
-    console.log(table)
-    console.log(curClient)
+    const isClientActive = (client) => client.cart.length >= 1 || client.articles.length >= 1
+    const isTableActive = (table) => table.clients.forEach((client) => isClientActive(client) ? true : undefined)
     
     const addItemToCart = (item) => {
         let curClientCart = curClient.cart ? [...curClient.cart, {...item, cartId: curClient.cart.length}] : [{...item, cartId: 0}]
@@ -53,7 +68,15 @@ function Main() {
     const removeItemFromOrder = (item) => orders.filter(elem => item !== elem)
 
     const changeClient = (newClient) => {
-        setTable({...table, clients: table.clients.map((client) => client.id === table.clients[curClient.id - 1].id ? curClient : client)})
+        setTable(
+            {
+                ...table,
+                active: isTableActive(table),
+                clients: table.clients.map((client) => client.id === table.clients[curClient.id - 1].id ? 
+                    {...curClient, active: isClientActive(curClient)} 
+                    : client)
+            }
+        )
         setCurClient(newClient)
     }
 
@@ -78,15 +101,13 @@ function Main() {
         setTable(
             {
                 ...table,
-                active: curClient.cart.length >= 1 || curClient.articles >= 1 ? true : false,
+                active: isTableActive(table),
                 clients: table.clients.map((client) => client.id === table.clients[curClient.id - 1].id ? 
-                    {
-                        ...curClient, 
-                        active: curClient.cart.length >= 1 || curClient.articles >= 1 ? true : false
-                    } 
+                    {...curClient, active: isClientActive(curClient)} 
                     : client)
             }
         )
+        console.log(table)
     },[curClient])
 
     useEffect(() => {
@@ -100,97 +121,50 @@ function Main() {
 
     return (
         <div className='pos-page'>
-            <header className=" d-flex flex-row bg-dark bg-gradient header justify-content-between align-items-center">
+            <Header>
                 <div className="text-light d-flex justify-content-start">
-                    <h2 className="mx-3 title"><NavLink to="/" className="navlink">Cluster</NavLink></h2>
+                    <h2 className="mx-3 title" onClick={() => navigate("/connection")}>Cluster</h2>
                 </div>
-                <div className="d-flex justify-content-center">
-                    <i className="bi bi-caret-left icons px-3" onClick={() => changeClient(curClient.id > 1 ? table.clients[curClient.id - 2] : table.clients[curClient.id - 1])}></i>
-                    <i className="bi bi-people icons px-3" onClick={() => navigate("/pivot", {state: {user: user, table: table}})}></i>
-                    <i className="bi bi-caret-right icons px-3" onClick={() => changeClient(table.clients[curClient.id])}></i>
-                </div>
-                <div className="pe-5 me-3">
-                    <p className="username">User: {user.name}</p>
-                    <p className="clientname text-light">Table: {table.id}</p>
-                    <p className="clientname text-light">Client: {curClient.id}</p>
-                </div>
-            </header>
-
-            <div className="bg-dark main-panel d-flex flex-row">
-
+                <ClientNavigationContainer 
+                    leftArrowClick={changeClient(curClient.id > 1 ? table.clients[curClient.id - 2] : table.clients[curClient.id - 1])} 
+                    rightArrowClick={navigate("/pivot", {state: {user: user, table: table}})} 
+                    pivotIconClick={changeClient(table.clients[curClient.id])}/>
+                <StatusContainer username={user.name} tableNumber={table.id} clientNumber={curClient.id}/>
+            </Header>
+            <MainPanel>
                 {/* left panel */}
-                <div className="side-panel bg-dark">
-                    <div className="d-flex flex-row justify-content-between align-items-center bg-gradient side-panel-top">
-                        <div className="text-light ps-2">Client: {curClient.id}</div>
-                        <div>
-                            <i className="bi bi-plus icons" onClick={() => addItemToCart(selectedItem)}></i>
-                            <i className="bi bi-dash icons" onClick={() => removeItemFromCart(selectedItem)}></i>
-                        </div>
-                    </div>
-                    <div className='d-flex flex-column justify-content-between'>
-                        <div className='d-flex cart-container align-items-stretch'>
-                            <ul className='light' onChange={() => updateTotal()}> 
-                                {curClient.cart ? curClient.cart.map((item, key) => 
-                                <li className='light d-flex flex-column'
-                                    key={key}
-                                    style={item.cartId === selectedItem.cartId ? {border: "1px solid lightgray"} : {border: "none"}}
-                                    onClick={() => handleSelect(item)}
-                                    >
-                                    <div className='d-flex flex-row justify-content-between'>
-                                        <div>{item.name}</div>
-                                        <div className='mx-2'>{item.price}$</div>
-                                    </div>
-                                    <div className='px-2'>{item.note ? `note: ${item.note}` : undefined}</div>
-                                </li>) : undefined}
-                            </ul>
-                        </div>
-                        <div className='fw-bold light border border-light px-2 total-container'>
-                            <p>SubTotal: {cartSubTotal}$</p>
-                            <p>TPS: {tps.toFixed(2)}$</p>
-                            <p>TVQ: {tvq.toFixed(2)}$</p>
-                            <p>Total: {cartTotal.toFixed(2)}$</p>
-                        </div>
-                    </div>
-                </div>
+                <SidePanel>
+                    <TopSidePanelContainer plusIconClick={addItemToCart} minusIconClick={removeItemFromCart} curClient={curClient} selectedItem={selectedItem}/>
+                    <CartContainer>
+                        <CartItemsContainer>
+                            <CartItemsList curClient={curClient} selectedItem={selectedItem} onChange={updateTotal} itemClick={handleSelect}/>
+                        </CartItemsContainer>
+                        <PriceContainer subTotal={cartSubTotal} tps={tps} tvq={tvq} total={cartTotal}/>
+                    </CartContainer>
+                </SidePanel>
 
                 {/* mid panel */}
-                <div className="mid-panel bg-dark d-flex flex-column justify-content-between">
-                    <div>
-                        <ul className="d-flex text-light panel-list flex-column">
-                            {items ? items.map((item, key) => 
-                                <li key={key} className="list-item" onClick={() => {
-                                    addItemToCart(item)
-                                }}>{item.name}</li>
-                            )
-                            : <li className="list-item">Loading</li>}                        
-                        </ul>
-                    </div>
-                    <div className={`${showNoteBox ? "show" : "visually-hidden"}`}>
-                        <div className='d-flex align-self-end w-100 p-2' >
-                            <div className='flex-columns'>
-                                <div><h3 className='text-light'>Add Note</h3></div>
-                                <div className='d-flex w-100'>
-                                    <input className='w-100 border rounded' type="text" value={note} onChange={(e) => setNote(e.target.value)}/>
-                                    <div className='text-light btn btn-primary mx-2' onClick={() => addNote()}>Add</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+                <MidPanel>
+                    <ItemsList items={items} itemClick={addItemToCart}/>
+                    <NoteContainer note={note} setNote={setNote} addNote={addNote} showNoteBox={showNoteBox}/>
+                </MidPanel>
+                
 
                 {/* right panel */}
-                <div className="side-panel bg-dark d-flex flex-row justify-content-between">
+                <SidePanel>
                     <ul className="text-light panel-list">
                         {categories.map((cat, key) => 
                             <li key={key} className="list-item" onClick={() => setitems(cat.items)}>{cat.name}</li>
                         )}
                     </ul>
-                </div>
-            </div>
+                </SidePanel>
+            </MainPanel>
+            
 
-            <div className="footer bg-dark bg-gradient">
-                <ul className="text-light footer-list d-flex flex-row">
-                    <FooterButton title="Déconnexion" color="yellow" icon="bi-box-arrow-left" click={() => true}/>
+            <FooterContainer>
+                <FooterButtonList>
+                    <FooterButton title="Déconnexion" color="yellow" icon="bi-box-arrow-left" click={() => navigate("/connection")}/>
                     <FooterButton title="Supprimer" color="red" icon="bi-x-lg" click={() => removeItemFromCart(selectedItem)}/>
                     <FooterButton title="Ingredients" color="orange" icon="bi-card-checklist" click={() => true}/>
                     <FooterButton title="Services" color="pink" icon="bi-list-ol" click={() => true}/>
@@ -198,8 +172,8 @@ function Main() {
                     <FooterButton title="Payment" color="blue" icon="bi-credit-card" click={() => true}/>
                     <FooterButton title="Annuler" color="red" icon="bi-slash-circle" click={() => true}/>
                     <FooterButton title="Continuer" color="green" icon="bi-check-circle" click={() => handlePunch()}/>
-                </ul>
-            </div>
+                </FooterButtonList>
+            </FooterContainer>
         </div>
         
     )

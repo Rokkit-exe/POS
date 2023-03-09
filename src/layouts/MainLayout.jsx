@@ -10,7 +10,7 @@ function MainLayout({children}) {
                         <Link to="/" className='navbar-brand light'>DevPOS</Link>
                     </div>
                     <div className='container-fluid'>
-                        <Link to="/con" className='navbar-brand light'>Connection</Link>
+                        <Link to="/connection" className='navbar-brand light'>Connection</Link>
                     </div>
                     <div className='container-fluid'>
                         <Link to="/main" className='navbar-brand light'>Main</Link>

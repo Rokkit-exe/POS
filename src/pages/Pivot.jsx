@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, useLocation, useNavigate, Outlet } from 'react-router-dom'
 import Client from "../objects/Client.jsx"
-import FooterButton from '../components/FooterButton.jsx'
+import FooterButton from '../components/Footer/FooterButton.jsx'
+import Header from '../components/Header/Header.jsx'
+import SidePanel from '../components/MainPanel/SidePanel/SidePanel.jsx'
 
 function Pivot() {
 
@@ -56,7 +58,7 @@ function Pivot() {
 
     return (
         <div className='pos-page'>
-            <header className=" d-flex bg-dark bg-gradient header">
+            <Header>
                 <ul className=" pivot-list d-flex flex-row justify-content-between align-items-center">
                     {table.clients ? table.clients.map((client, key) => 
                         <li className="d-flex justify-content-center align-items-center flex-column" 
@@ -70,14 +72,17 @@ function Pivot() {
                     )
                     : ""}
                 </ul>
-            </header>
+            </Header>
 
             <div className="bg-dark main-panel d-flex flex-row">
-
                 {/* left panel */}
                 <div className="side-panel bg-dark">
                     <div className="d-flex flex-row justify-content-between align-items-center bg-gradient side-panel-top">
-                        <div className="text-light ps-2">Client 1</div>
+                        <div className="text-light ps-2">Client: {curClient.id}</div>
+                        <div>
+                            <i className="bi bi-plus icons"></i>
+                            <i className="bi bi-dash icons"></i>
+                        </div>
                     </div>
                     <div className='d-flex flex-column justify-content-between'>
                         <div className='d-flex cart-container align-items-stretch'>
@@ -131,14 +136,14 @@ function Pivot() {
                 </div>
 
                 {/* right panel */}
-                <div className="side-panel bg-dark d-flex flex-row justify-content-between">
-                    
-                </div>
+                <SidePanel>
+
+                </SidePanel>
             </div>
 
             <div className="footer bg-dark bg-gradient">
                 <ul className="text-light footer-list d-flex flex-row">
-                    <FooterButton title="Déconnexion" color="yellow" icon="bi-box-arrow-left" click={() => true}/>
+                    <FooterButton title="Déconnexion" color="yellow" icon="bi-box-arrow-left" click={() => navigate("/connection")}/>
                     <FooterButton title="Supprimer" color="red" icon="bi-x-lg" click={() => true}/>
                     <FooterButton title="Ingredients" color="orange" icon="bi-card-checklist" click={() => true}/>
                     <FooterButton title="Services" color="pink" icon="bi-list-ol" click={() => true}/>
